@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# To use:
+# 1. install 'pass' passwordstore @ https://github.com/ampling/pass
+#
+# 2. make sure you have passwords in ~/.password-store
+#
+# 3. add 'password:/path/to/pass-rofi' to rofi config 
+#
+
+PASSDIR=~/.password-store
+
+list(){ find -L "$PASSDIR" -type f | sed 's|.gpg$||g;s|'$PASSDIR'/||g' ; }
+
+if [ -z "$@" ]
+then
+    echo -en "\x00prompt\x1fpassword\n"
+    echo -en "\0markup-rows\x1ftrue\n"
+    echo -en "\0message\x1fselect password to expand\n"
+
+    list 
+    echo "quit"
+else
+  account=$@
+  test $snippet = "quit" && exit 0
+  x=$(pass "$account")
+  coproc (echo -n "$x" | xdotool type --clearmodifiers --file -)
+fi
