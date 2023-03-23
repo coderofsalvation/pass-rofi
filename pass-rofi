@@ -12,12 +12,6 @@ PASSDIR=~/.password-store
 
 list(){ find -L "$PASSDIR" -type f | sed 's|.gpg$||g;s|'$PASSDIR'/||g' ; }
 
-prompt(){
-  sleep 0.5
-  x=$(pass "$account")
-  coproc (echo -n "$x" | xdotool type --clearmodifiers --file -)
-}
-
 if [ -z "$@" ]
 then
     echo -en "\x00prompt\x1fpassword\n"
@@ -29,6 +23,6 @@ then
 else
   account=$@
   test $snippet = "quit" && exit 0
-  prompt &
+  coproc (x=$(pass "$account"); echo -n "$x" | xdotool type --clearmodifiers --file -)
   exit 0
 fi
